@@ -2,7 +2,7 @@ FROM continuumio/miniconda3
 
 # Creating new environment according to environment.yml
 WORKDIR /app
-COPY ../pacages/env.yml /app/env.yml
+COPY ../packages/env.yml /app/env.yml
 RUN conda env create -f env.yml
 
 RUN echo "source activate myenv" > ~/.bashrc
