@@ -41,17 +41,17 @@ jobs:
           labels: |
             io.artifacthub.package.readme-url=https://raw.githubusercontent.com/ublue-os/boxkit/main/README.md
 
-      # Build image using Buildah action
-      - name: Build Image
-        id: build_image
-        uses: redhat-actions/buildah-build@v2
-        with:
-          containerfiles: |
-            ./ContainerFiles/${{ matrix.containerfile }}
-          image: ${{ matrix.containerfile }}
-          tags: ${{ env.IMAGE_TAGS }}
-          labels: ${{ steps.meta.outputs.labels }}
-          oci: true
+      # # Build image using Buildah action
+      # - name: Build Image
+      #   id: build_image
+      #   uses: redhat-actions/buildah-build@v2
+      #   with:
+      #     containerfiles: |
+      #       ./ContainerFiles/${{ matrix.containerfile }}
+      #     image: ${{ matrix.containerfile }}
+      #     tags: ${{ env.IMAGE_TAGS }}
+      #     labels: ${{ steps.meta.outputs.labels }}
+      #     oci: true
           
       # Workaround bug where capital letters in your GitHub username make it impossible to push to GHCR.
       # https://github.com/macbre/push-to-ghcr/issues/12
@@ -60,6 +60,7 @@ jobs:
         uses: ASzc/change-string-case-action@v6
         with:
           string: ${{ env.IMAGE_REGISTRY }}
+          
       # Login to GHCR
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -70,18 +71,12 @@ jobs:
 
       # Push the image to GHCR (Image Registry)
       - name: Push To GHCR
-        uses: redhat-actions/push-to-registry@v2
-        if: github.event_name != 'pull_request'
-        id: push
-        env:
-          REGISTRY_USER: ${{ github.actor }}
-          REGISTRY_PASSWORD: ${{ github.token }}
+        uses: docker/build-push-action
         with:
-          image: ${{ steps.build_image.outputs.image }}
-          tags: ${{ steps.build_image.outputs.tags }}
-          registry: ${{ steps.registry_case.outputs.lowercase }}
-          username: ${{ env.REGISTRY_USER }}
-          password: ${{ env.REGISTRY_PASSWORD }}
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{steps.meta.outputs.labels }}
                   
       # Sign container
       - name: Install cosign
