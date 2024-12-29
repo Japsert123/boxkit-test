@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         containerfile: 
-          - boxkit
+          - spyder_container
        #- fedora-example # Included as an example to demonstrate multi-image builds, uncomment to build the fedora-example container too
     steps:
       # Checkout push-to-registry action GitHub repository
